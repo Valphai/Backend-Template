@@ -12,28 +12,12 @@ public class RefreshTokenHandler(IUserRepository userRepository, IUnitOfWork uni
 {
     public async Task<HandlerResponse> Handle(RefreshTokenRequest request, CancellationToken token)
     {
-        User? user;
-        try
-        {
-            user = await userRepository.GetUserByRefreshCode(request.RefreshToken, token);
-            if (user is null) return new HandlerResponse("User not found", 404);
-        }
-        catch
-        {
-            return new HandlerResponse("Internal Server Error", 500);
-        }
+        var user = await userRepository.GetUserByRefreshCode(request.RefreshToken, token);
+        if (user is null) return new HandlerResponse("User not found", 404);
 
-        // Update Refresh token
         user.GenerateRefreshToken();
 
-        try
-        {
-            await unitOfWork.Commit(token);
-        }
-        catch
-        {
-            return new HandlerResponse("Internal Server Error", 500);
-        }
+        await unitOfWork.Commit(token);
 
         var userDTO = mapper.Map<UserResponseDTO>(user);
         return new HandlerResponse("Token Refreshed", 200, userDTO);
