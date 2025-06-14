@@ -1,6 +1,4 @@
-using Microsoft.OpenApi.Models;
 using Project.Application.Extensions;
-using Project.Infrastructure.Config;
 using Project.WebApi.Extensions;
 using System.Text.Json.Serialization;
 using Project.Infrastructure.Extensions;
@@ -21,38 +19,14 @@ builder.Services.AddMvc()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-// Request JWT token in Swagger
-builder.Services.AddSwaggerGen(options => {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
-        In = ParameterLocation.Header,
-        Description = "Please enter a valid token",
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "Bearer"
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement {
-        {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            []
-        }
-    });
-
-    options.CustomSchemaIds(type => type.ToString());
-});
+builder.Services.RequestJwtTokenInSwagger();
 
 builder.Services.AddLogging();
 builder.Services.ConfigureCorsPolicy();
 
 // Custom extensions
-builder.AddConfiguration();
-builder.AddJwtAuthentication();
+var config = builder.AddConfiguration();
+builder.AddJwtAuthentication(config.Secrets.JwtPrivateKey!);
 
 var app = builder.Build();
 
@@ -69,5 +43,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+app.UseCustomExceptionHandler();
 
 app.Run();

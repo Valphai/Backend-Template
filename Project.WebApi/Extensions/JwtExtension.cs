@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Project.Application.DataTransferObjects;
-using Project.Domain.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -9,10 +8,10 @@ namespace Project.WebApi.Extensions;
 
 public static class JwtExtension
 {
-    public static string Generate(UserResponseDTO data)
+    public static string Generate(UserResponseDTO data, string secretsJwtPrivateKey)
     {
         var handler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(Configuration.Secrets.JwtPrivateKey);
+        var key = Encoding.ASCII.GetBytes(secretsJwtPrivateKey);
         var credentials = new SigningCredentials(new SymmetricSecurityKey(key),
             SecurityAlgorithms.HmacSha256Signature);
 

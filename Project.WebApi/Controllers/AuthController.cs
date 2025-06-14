@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Project.Application.Users.Authentication;
 using Project.Application.Users.Create;
 using Project.Application.Users.RefreshToken;
+using Project.Domain.Security;
 using Project.WebApi.Extensions;
 
 namespace Project.WebApi.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController(IMediator mediator) : ControllerBase
+public class AuthController(IMediator mediator, Configuration configuration) : ControllerBase
 {
     [HttpPost("register")]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest request, CancellationToken cancellation)
@@ -29,7 +30,7 @@ public class AuthController(IMediator mediator) : ControllerBase
 
         if (response?.Data is null) return BadRequest();
 
-        response.Data.Token = JwtExtension.Generate(response.Data);
+        response.Data.Token = JwtExtension.Generate(response.Data, configuration.Secrets.JwtPrivateKey!);
 
         return Ok(response);
     }
@@ -42,7 +43,7 @@ public class AuthController(IMediator mediator) : ControllerBase
 
         if (response?.Data is null) return BadRequest();
 
-        response.Data.Token = JwtExtension.Generate(response.Data);
+        response.Data.Token = JwtExtension.Generate(response.Data, configuration.Secrets.JwtPrivateKey!);
         return Ok(response);
     }
 }
