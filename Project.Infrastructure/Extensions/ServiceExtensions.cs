@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Project.Domain.Interfaces;
+using Project.Domain.Services;
 using Project.Infrastructure.Config;
 using Project.Infrastructure.Repositories;
 
@@ -18,6 +19,7 @@ namespace Project.Infrastructure.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<ISecurityRepository, SecurityRepository>();
         }
     }
 }
