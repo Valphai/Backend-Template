@@ -27,7 +27,7 @@ public class RepositoryBase<T> : IBaseRepository<T> where T : EntityBase
 
     public List<T> GetAll() => context.Set<T>().ToList();
 
-    public T? GetBy(Guid id) => context.Set<T>()
+    public T? GetById(Guid id) => context.Set<T>()
         .FirstOrDefault(x => x.Id == id);
 
     public void Update(T entity)
